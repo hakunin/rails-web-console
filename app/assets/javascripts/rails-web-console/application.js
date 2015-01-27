@@ -1,7 +1,7 @@
 //
 //= require jquery
-//= require cookie.js
-//= require command_cache.js
+//= require ./cookie.js
+//= require ./command_cache.js
 //= require_self
 
 
