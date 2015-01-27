@@ -81,16 +81,34 @@ Hi there! This is a pure web console
         $stdout.rewind
         stdout = 'error during stdout rewing'
         stdout = escape $stdout.read
-      rescue Exception => e
+
+        render(json: {
+          stdout: stdout,
+          value: escape(result.inspect),
+          type: get_type(result)
+        })
+      rescue SecurityError => e
         result = e
         stdout = escape(e.message) + "\n", e.backtrace[0..10].join("\n")
+      rescue NoMemoryError => e
+        result = e
+        stdout = escape(e.message) + "\n", e.backtrace[0..10].join("\n")
+      rescue ScriptError => e
+        result = e
+        stdout = escape(e.message) + "\n", e.backtrace[0..10].join("\n")
+      rescue StandardError => e
+        result = e
+        stdout = escape(e.message) + "\n", e.backtrace[0..10].join("\n")
+      ensure
+        $stdout = stdout_orig
       end
-      $stdout = stdout_orig
-      render(json: {
-        stdout: stdout,
-        value: escape(result.inspect),
-        type: get_type(result)
-      })
+      if e
+        render(json: {
+          stdout: stdout,
+          value: escape(result.inspect),
+          type: get_type(result)
+        })
+      end
     end
 
     protected
